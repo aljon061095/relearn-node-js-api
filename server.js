@@ -1,35 +1,9 @@
+
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var mysql = require('mysql');
-
-//sending email
-function sendEmail (email, referral_code) {
-    var nodemailer = require('nodemailer');
-    
-    var transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: 'aquiambao061095@gmail.com',
-            pass: 'jmrttbcrjqoohjqh'
-        }
-    });
-
-    var mailOptions = {
-        from: 'aquiambao061095@gmail.com',
-        to: email,
-        subject: 'Welcome onBoarding ReLearn',
-        html: '<div style="border: 2px solid blue; border-radius: 5px;width: 50%; text-align: center;"><h2>Welcome onBoarding ReLearn!</h2><p>Join our referral program kindly share your referral code to others!</p><h3><b>ST' +  referral_code + '</b></h3></div>'
-    };
-
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log('Email sent: ' + info.response);
-        }
-    });
-}
+var mail = require("./mail");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -123,7 +97,8 @@ app.post('/adduser', function (req, res) {
         , function (error, results, fields) {
             if (error) throw error;
 
-           sendEmail(email, referral_code);
+        //    sendEmail(email, referral_code);
+        mail.sendEmail(email, referral_code);
 
             return res.send({ error: false, data: results, message: 'New user has been created successfully.' });
         });
@@ -148,7 +123,7 @@ app.put('/updateuser', function (req, res) {
 
 
 //  Delete user
-app.delete('/user', function (req, res) {
+app.delete('/deleteuser', function (req, res) {
 
     let user_id = req.body.user_id;
 
