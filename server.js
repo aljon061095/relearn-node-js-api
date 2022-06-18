@@ -4,6 +4,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var mysql = require('mysql');
 var mail = require("./mail");
+var path = require('path');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -33,7 +34,8 @@ app.use(function (req, res, next) {
 
 // default route
 app.get('/', function (req, res) {
-    return res.send({ error: true, message: 'hello' })
+    // return res.send({ error: true, message: 'hello' })
+    res.sendFile(path.join(__dirname+'/index.html'));
 });
 
 // connection configurations
@@ -109,13 +111,22 @@ app.post('/adduser', function (req, res) {
 app.put('/updateuser', function (req, res) {
 
     let user_id = req.body.user_id;
-    let user = req.body.user;
+    let nickname = req.body.nickname;
+    let email = req.body.email;
+    let age = req.body.age;
+    let gender = req.body.gender;
+    let grade = req.body.grade;
+    let referral_code = req.body.referral_code;
+    let password = req.body.password;
+    // let user = req.body.user;
 
-    if (!user_id || !user) {
-        return res.status(400).send({ error: user, message: 'Please provide user and user_id' });
+    if (!user_id) {
+        return res.status(400).send({ error: user, message: 'Please provide user_id' });
     }
 
-    dbConn.query("UPDATE users SET user = ? WHERE id = ?", [user, user_id], function (error, results, fields) {
+    dbConn.query("UPDATE users SET nickname = ?, email = ?, age = ?, gender = ?, grade = ?, referral_code = ?, password = ? WHERE id = ?", 
+            [nickname, email, age, gender, grade, referral_code, password, user_id],
+             function (error, results, fields) {
         if (error) throw error;
         return res.send({ error: false, data: results, message: 'user has been updated successfully.' });
     });
@@ -132,7 +143,7 @@ app.delete('/deleteuser', function (req, res) {
     }
     dbConn.query('DELETE FROM users WHERE id = ?', [user_id], function (error, results, fields) {
         if (error) throw error;
-        return res.send({ error: false, data: results, message: 'User has been updated successfully.' });
+        return res.send({ error: false, data: results, message: 'User has been deleted successfully.' });
     });
 });
 
