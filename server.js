@@ -40,10 +40,10 @@ app.get('/', function (req, res) {
 
 // connection configurations
 var dbConn = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'test'
+    host: '13.213.60.83',
+    user: 'relearnadmin',
+    password: 'gofleet0088',
+    database: 'userinfo'
 });
 
 // connect to database
@@ -84,6 +84,7 @@ app.post('/adduser', function (req, res) {
     let gender = req.body.gender;
     let grade = req.body.grade;
     let referral_code = req.body.referral_code;
+    let referral = Math.floor(10000000 + Math.random() * 90000000);
     let password = req.body.password;
 
     dbConn.query("INSERT INTO users SET ? ",
@@ -94,13 +95,14 @@ app.post('/adduser', function (req, res) {
             gender: gender,
             grade: grade,
             referral_code: referral_code,
+            referral: referral,
             password: password
         }
         , function (error, results, fields) {
             if (error) throw error;
 
         //    sendEmail(email, referral_code);
-        mail.sendEmail(email, referral_code);
+        mail.sendEmail(email, referral);
 
             return res.send({ error: false, data: results, message: 'New user has been created successfully.' });
         });
