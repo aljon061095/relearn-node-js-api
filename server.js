@@ -119,6 +119,7 @@ app.put('/updateuser', function (req, res) {
     let gender = req.body.gender;
     let grade = req.body.grade;
     let referral_code = req.body.referral_code;
+    let referral = req.body.referral;
     let password = req.body.password;
     // let user = req.body.user;
 
@@ -126,8 +127,8 @@ app.put('/updateuser', function (req, res) {
         return res.status(400).send({ error: user, message: 'Please provide user_id' });
     }
 
-    dbConn.query("UPDATE users SET nickname = ?, email = ?, age = ?, gender = ?, grade = ?, referral_code = ?, password = ? WHERE id = ?", 
-            [nickname, email, age, gender, grade, referral_code, password, user_id],
+    dbConn.query("UPDATE users SET nickname = ?, email = ?, age = ?, gender = ?, grade = ?, referral_code = ?, referral = ?, password = ? WHERE id = ?", 
+            [nickname, email, age, gender, grade, referral_code, password, referral, user_id],
              function (error, results, fields) {
         if (error) throw error;
         return res.send({ error: false, data: results, message: 'user has been updated successfully.' });
