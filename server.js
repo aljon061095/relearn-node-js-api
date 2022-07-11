@@ -73,6 +73,53 @@ app.get('/user/:id', function (req, res) {
 
 });
 
+// Add a new user  
+app.post('/createuser', function (req, res) {
+    //parent info
+    let email = req.body.parent.email;
+    let password = req.body.parent.password;
+    let referral_code = req.body.parent.referral_code;
+    let referral = Math.floor(10000000 + Math.random() * 90000000);
+
+    //kids info
+    let nickname = req.body.kids.nickname;
+    let gender = req.body.kids.gender;
+    let age = req.body.kids.age;
+    let grade = req.body.kids.grade;
+    let kidsPassword = req.body.kids.kidsPassword;
+
+    //parent info
+    dbConn.query("INSERT INTO parent SET ? ",
+        {
+            email: email,
+            password: password,
+            referral_code: referral_code,
+            referral: referral
+        }, 
+        function (error, results, fields) {
+
+        let parentId = results.insertId;
+        
+        if (error == null) {
+            dbConn.query("INSERT INTO kids SET ? ",
+            {
+                parent_id: parentId,
+                nickname: nickname,
+                gender: gender,
+                age: age,
+                grade: grade,
+                password: kidsPassword,
+            },
+            function (error, results, fields) {
+                if (error) throw error;
+        
+                mail.sendEmail(email, referral);
+        
+                return res.send({ error: false, data: results, message: 'New user has been created successfully.' });
+            });
+        }
+    });
+});
 
 // Add a new user  
 app.post('/adduser', function (req, res) {
@@ -154,7 +201,6 @@ app.delete('/deleteuser', function (req, res) {
 app.listen(3000, function () {
     console.log('Relearn Node app is running on port 3000');
 });
-
 
 
 module.exports = app;
